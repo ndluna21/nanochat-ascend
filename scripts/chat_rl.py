@@ -320,7 +320,12 @@ for step in range(num_steps):
     })
 
     # Master process saves the model once in a while. Skip first step. Save last step.
-    if master_process and ((step > 0 and step % args.save_every == 0) or step == num_steps - 1):
+    should_save = ((step > 0 and step % args.save_every == 0) or step == num_steps - 1)
+    if ddp and should_save:
+        # Keep all ranks alive while rank0 snapshots parameters to CPU and writes the checkpoint.
+        # Without this, non-zero ranks may destroy HCCL at script exit while rank0 is still checkpointing.
+        dist.barrier()
+    if master_process and should_save:
         base_dir = get_base_dir()
         depth = model.config.n_layer
         output_dirname = args.model_tag if args.model_tag else f"d{depth}" # base the model tag on the depth of the base model
@@ -336,6 +341,8 @@ for step in range(num_steps):
             }
         )
         print(f"✅ Saved model checkpoint to {checkpoint_dir}")
+    if ddp and should_save:
+        dist.barrier()
 
 # Log to report
 from nanochat.report import get_report
@@ -345,4 +352,6 @@ get_report().log(section="Chat RL", data=[
 
 if master_process:
     exp_logger.finish()
+if ddp:
+    dist.barrier()
 compute_cleanup()
