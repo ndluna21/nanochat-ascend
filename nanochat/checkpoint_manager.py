@@ -6,6 +6,7 @@ import re
 import glob
 import json
 import logging
+from collections import OrderedDict
 import torch
 
 from nanochat.common import get_base_dir
@@ -39,12 +40,30 @@ def _patch_missing_keys(model_data, model_config):
         model_data["x0_lambdas"] = torch.zeros(n_layer)
         log0(f"Patching missing x0_lambdas in model data to 0.0")
 
+def _cpu_snapshot(obj):
+    """
+    Recursively move tensors to CPU before serialization.
+    This avoids backend-specific device storage save paths (e.g. torch_npu),
+    which can fail while checkpointing even though the training step succeeded.
+    """
+    if torch.is_tensor(obj):
+        return obj.detach().cpu()
+    if isinstance(obj, OrderedDict):
+        return OrderedDict((k, _cpu_snapshot(v)) for k, v in obj.items())
+    if isinstance(obj, dict):
+        return {k: _cpu_snapshot(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_cpu_snapshot(v) for v in obj]
+    if isinstance(obj, tuple):
+        return tuple(_cpu_snapshot(v) for v in obj)
+    return obj
+
 def save_checkpoint(checkpoint_dir, step, model_data, optimizer_data, meta_data, rank=0):
     if rank == 0:
         os.makedirs(checkpoint_dir, exist_ok=True)
         # Save the model state parameters
         model_path = os.path.join(checkpoint_dir, f"model_{step:06d}.pt")
-        torch.save(model_data, model_path)
+        torch.save(_cpu_snapshot(model_data), model_path)
         logger.info(f"Saved model parameters to: {model_path}")
         # Save the metadata dict as json
         meta_path = os.path.join(checkpoint_dir, f"meta_{step:06d}.json")
@@ -55,7 +74,7 @@ def save_checkpoint(checkpoint_dir, step, model_data, optimizer_data, meta_data,
     if optimizer_data is not None:
         os.makedirs(checkpoint_dir, exist_ok=True)
         optimizer_path = os.path.join(checkpoint_dir, f"optim_{step:06d}_rank{rank:d}.pt")
-        torch.save(optimizer_data, optimizer_path)
+        torch.save(_cpu_snapshot(optimizer_data), optimizer_path)
         logger.info(f"Saved optimizer state to: {optimizer_path}")
 
 def load_checkpoint(checkpoint_dir, step, device, load_optimizer=False, rank=0):
